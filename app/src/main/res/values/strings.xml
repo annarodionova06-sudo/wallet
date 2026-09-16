@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Кошелёк</string>
+    <string name="app_title">Грустный кошелёк 👛</string>
+    <string name="settings">Настройки</string>
+    <string name="previous_month">Предыдущий месяц</string>
+    <string name="next_month">Следующий месяц</string>
+    <string name="balance_title">Баланс за месяц</string>
+    <string name="income">Доходы</string>
+    <string name="expense">Расходы</string>
+    <string name="recent_operations">Последние операции</string>
+    <string name="all">Все</string>
+</resources>

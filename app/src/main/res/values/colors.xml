@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Основные цвета синей темы -->
+    <color name="blue_primary">#1E3A8A</color>
+    <color name="blue_secondary">#3B82F6</color>
+    <color name="blue_bg">#F0F4F8</color>
+    <color name="blue_card_bg">#2563EB</color>
+
+    <!-- Состояния лимита и операций -->
+    <color name="income_green">#10B981</color>
+    <color name="expense_red">#EF4444</color>
+    <color name="limit_exceeded_bg">#DC2626</color>
+
+    <!-- Текст -->
+    <color name="text_primary">#1E293B</color>
+    <color name="text_secondary">#64748B</color>
+    <color name="white">#FFFFFF</color>
+</resources>
