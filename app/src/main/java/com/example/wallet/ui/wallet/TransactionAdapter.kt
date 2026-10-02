@@ -6,10 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.wallet.R
 
 class TransactionAdapter(
-    private val items: List<Transaction>
+    private val items: List<Transaction>,
+    private val onItemClick: (Transaction) -> Unit
 ) : RecyclerView.Adapter<TransactionAdapter.ViewHolder>() {
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -37,6 +37,11 @@ class TransactionAdapter(
         } else {
             holder.tvAmount.text = "- ${item.amount.toInt()} ₽"
             holder.tvAmount.setTextColor(Color.parseColor("#EF4444"))
+        }
+
+        // Клик по всей строчке элемента
+        holder.itemView.setOnClickListener {
+            onItemClick(item)
         }
     }
 

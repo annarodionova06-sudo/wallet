@@ -1,22 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/blue_bg">
 
-    <!-- 1. Область с прокруткой (занимает всё место, кроме нижней панели) -->
+    <!-- 1. Главный экран со скроллом (Вкладка "Главная") -->
     <androidx.core.widget.NestedScrollView
-        android:id="@+id/scrollView"
+        android:id="@+id/layoutHomeContainer"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:fillViewport="true"
-        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@id/bottomNavigation"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -26,6 +25,7 @@
 
             <!-- Шапка: Заголовок и Настройки -->
             <RelativeLayout
+                android:id="@+id/header"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -89,7 +89,7 @@
                     app:tint="@color/blue_secondary" />
             </LinearLayout>
 
-            <!-- Главная карточка баланса (оставил LinearLayout, как у тебя, чтобы не ломать Kotlin код) -->
+            <!-- Главная карточка баланса -->
             <LinearLayout
                 android:id="@+id/cardBalance"
                 android:layout_width="match_parent"
@@ -196,7 +196,6 @@
                             android:textColor="#DBEAFE"
                             android:textSize="12sp" />
 
-                        <!-- ИСПРАВЛЕНО: заменил хардкод #F87171 на твой цвет из colors.xml -->
                         <TextView
                             android:id="@+id/tvExpenses"
                             android:layout_width="wrap_content"
@@ -236,20 +235,44 @@
                     android:textStyle="bold" />
             </RelativeLayout>
 
-            <!-- 2. СПИСОК ОПЕРАЦИЙ: Заменен ListView на RecyclerView для поддержки свайпа -->
+            <!-- Список операций -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvTransactions"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
                 android:nestedScrollingEnabled="false"
-                tools:listitem="@layout/item_transaction"
-                tools:itemCount="3" />
+                tools:itemCount="3"
+                tools:listitem="@layout/item_transaction" />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <!-- 3. НИЖНЯЯ ПАНЕЛЬ НАВИГАЦИИ (Добавлена) -->
+    <!-- 2. Экран добавления операции -->
+    <include
+        android:id="@+id/layoutAdd"
+        layout="@layout/layout_add_transaction"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/bottomNavigation"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- 3. Экран статистики -->
+    <include
+        android:id="@+id/layoutStats"
+        layout="@layout/layout_statistics"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/bottomNavigation"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- 4. Нижняя панель навигации -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigation"
         android:layout_width="0dp"
@@ -259,8 +282,8 @@
         app:itemTextColor="@color/blue_primary"
         app:labelVisibilityMode="labeled"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:menu="@menu/bottom_nav_menu" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
