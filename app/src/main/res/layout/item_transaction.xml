@@ -2,21 +2,18 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?android:attr/selectableItemBackground"
     android:gravity="center_vertical"
     android:orientation="horizontal"
-    android:paddingVertical="12dp">
+    android:padding="12dp">
 
-    <!-- Иконка категории -->
     <TextView
-        android:id="@+id/tvCategoryIcon"
+        android:id="@+id/tvIcon"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:gravity="center"
         android:text="🍔"
-        android:textSize="24sp" />
+        android:textSize="22sp" />
 
-    <!-- Название и дата -->
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -25,10 +22,10 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/tvCategoryName"
+            android:id="@+id/tvTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Еда"
+            android:text="Название"
             android:textColor="@color/text_primary"
             android:textSize="16sp"
             android:textStyle="bold" />
@@ -37,17 +34,17 @@
             android:id="@+id/tvDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Сегодня, 14:32"
+            android:text="Дата"
             android:textColor="@color/text_secondary"
             android:textSize="12sp" />
     </LinearLayout>
 
-    <!-- Сумма -->
     <TextView
         android:id="@+id/tvAmount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="- 500 ₽"
+        android:text="0 ₽"
+        android:textColor="@color/expense_red"
         android:textSize="16sp"
         android:textStyle="bold" />
 
