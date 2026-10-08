@@ -1,17 +1,19 @@
 package com.example.wallet
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.RadioButton
-import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.wallet.databinding.ActivityMainBinding
+import com.google.android.material.switchmaterial.SwitchMaterial
 
 class MainActivity : AppCompatActivity() {
 
@@ -19,6 +21,11 @@ class MainActivity : AppCompatActivity() {
 
     private var spendingLimit = 30000.0
     private var currentMonthIndex = 1 // Сентябрь 2026
+    private var userName = "Иван"
+    private var userEmail = "user@example.com"
+
+    // Адаптер для экрана статистики
+    private val monthAdapter = MonthStatisticsAdapter()
 
     private val monthsData = mutableListOf(
         MonthData(
@@ -58,6 +65,16 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val sharedPrefs = getSharedPreferences("app_settings", MODE_PRIVATE)
+        val isDarkMode = sharedPrefs.getBoolean("is_dark_mode", false)
+
+        if (isDarkMode) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+        }
+
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -67,6 +84,7 @@ class MainActivity : AppCompatActivity() {
         setupClickListeners()
         setupAddTransactionLogic()
         setupNavigation()
+        setupSettingsPage()
     }
 
     private fun renderCurrentMonth() {
@@ -122,7 +140,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.btnSettings.setOnClickListener {
-            showSettingsDialog()
+            openSettingsScreen()
         }
 
         binding.btnAllTransactions.setOnClickListener {
@@ -130,38 +148,9 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun showSettingsDialog() {
-        val input = EditText(this).apply {
-            setText(spendingLimit.toInt().toString())
-            inputType = android.text.InputType.TYPE_CLASS_NUMBER
-        }
-
-        AlertDialog.Builder(this)
-            .setTitle("Настройки лимита")
-            .setMessage("Укажите новый лимит расходов на месяц (₽):")
-            .setView(input)
-            .setPositiveButton("Сохранить") { _, _ ->
-                val newLimit = input.text.toString().toDoubleOrNull()
-                if (newLimit != null && newLimit > 0) {
-                    spendingLimit = newLimit
-                    renderCurrentMonth()
-                    Toast.makeText(this, "Лимит обновлен: ${spendingLimit.toInt()} ₽", Toast.LENGTH_SHORT).show()
-                } else {
-                    Toast.makeText(this, "Введите корректную сумму", Toast.LENGTH_SHORT).show()
-                }
-            }
-            .setNegativeButton("Отмена", null)
-            .show()
-    }
-
     private fun setupNavigation() {
         binding.bottomNavigation.setOnItemSelectedListener { item ->
-            val addLayout = findViewById<View>(R.id.layoutAdd)
-            val statsLayout = findViewById<View>(R.id.layoutStats)
-
-            binding.layoutHomeContainer.visibility = View.GONE
-            addLayout?.visibility = View.GONE
-            statsLayout?.visibility = View.GONE
+            hideAllScreens()
 
             when (item.itemId) {
                 R.id.nav_home -> {
@@ -169,16 +158,65 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 R.id.nav_add -> {
-                    addLayout?.visibility = View.VISIBLE
+                    findViewById<View>(R.id.layoutAdd)?.visibility = View.VISIBLE
                     true
                 }
                 R.id.nav_stats -> {
-                    statsLayout?.visibility = View.VISIBLE
+                    findViewById<View>(R.id.layoutStats)?.visibility = View.VISIBLE
                     updateStatistics()
                     true
                 }
                 else -> false
             }
+        }
+    }
+
+    private fun hideAllScreens() {
+        binding.layoutHomeContainer.visibility = View.GONE
+        findViewById<View>(R.id.layoutAdd)?.visibility = View.GONE
+        findViewById<View>(R.id.layoutStats)?.visibility = View.GONE
+        findViewById<View>(R.id.layoutSettings)?.visibility = View.GONE
+    }
+
+    private fun openSettingsScreen() {
+        hideAllScreens()
+        val settingsLayout = findViewById<View>(R.id.layoutSettings)
+        settingsLayout?.visibility = View.VISIBLE
+
+        findViewById<EditText>(R.id.etSettingsName)?.setText(userName)
+        findViewById<EditText>(R.id.etSettingsEmail)?.setText(userEmail)
+        findViewById<EditText>(R.id.etSettingsLimit)?.setText(spendingLimit.toInt().toString())
+
+        val currentNightMode = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+        val isNightMode = currentNightMode == Configuration.UI_MODE_NIGHT_YES
+        findViewById<SwitchMaterial>(R.id.switchTheme)?.isChecked = isNightMode
+    }
+
+    private fun setupSettingsPage() {
+        val btnSave = findViewById<Button>(R.id.btnSaveSettings)
+        val switchTheme = findViewById<SwitchMaterial>(R.id.switchTheme)
+
+        switchTheme?.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            } else {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            }
+        }
+
+        btnSave?.setOnClickListener {
+            val nameInput = findViewById<EditText>(R.id.etSettingsName)?.text.toString().trim()
+            val emailInput = findViewById<EditText>(R.id.etSettingsEmail)?.text.toString().trim()
+            val limitInput = findViewById<EditText>(R.id.etSettingsLimit)?.text.toString().toDoubleOrNull()
+
+            if (nameInput.isNotEmpty()) userName = nameInput
+            if (emailInput.isNotEmpty()) userEmail = emailInput
+            if (limitInput != null && limitInput > 0) spendingLimit = limitInput
+
+            renderCurrentMonth()
+
+            binding.bottomNavigation.selectedItemId = R.id.nav_home
+            Toast.makeText(this, "Настройки сохранены!", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -225,19 +263,31 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    // Логика отображения статистики
     private fun updateStatistics() {
-        val statsLayout = findViewById<View>(R.id.layoutStats) ?: return
+        val rvStatistics = findViewById<RecyclerView>(R.id.rvMonthStatistics)
+        rvStatistics?.adapter = monthAdapter
 
-        val tvStatsSummary = statsLayout.findViewById<TextView>(R.id.tvStatsSummary)
-        val tvStatsCategories = statsLayout.findViewById<TextView>(R.id.tvStatsCategories)
+        val statsList = monthsData.map { month ->
+            val expensesOnly = month.transactions.filter { !it.isIncome }
 
-        val currentData = monthsData[currentMonthIndex]
-        tvStatsSummary?.text = "За ${currentData.monthName} потрачено: ${currentData.expense.toInt()} ₽"
+            val categories = expensesOnly
+                .groupBy { it.title }
+                .map { (catName, catTransactions) ->
+                    CategorySum(
+                        categoryName = catName,
+                        icon = catTransactions.firstOrNull()?.icon ?: "💳",
+                        totalAmount = catTransactions.sumOf { it.amount }
+                    )
+                }
 
-        val categoriesText = currentData.transactions
-            .filter { !it.isIncome }
-            .joinToString("\n") { "${it.icon} ${it.title}: ${it.amount.toInt()} ₽" }
+            MonthStatistics(
+                monthYearTitle = "За ${month.monthName}",
+                totalSpent = month.expense,
+                categories = categories
+            )
+        }
 
-        tvStatsCategories?.text = categoriesText.ifEmpty { "Расходов пока нет" }
+        monthAdapter.submitList(statsList)
     }
 }

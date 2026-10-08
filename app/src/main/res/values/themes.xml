@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <style name="Theme.Wallet" parent="Theme.AppCompat.Light.NoActionBar"/>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="Theme.Wallet" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Цвета приложения -->
+        <item name="colorPrimary">@color/blue_primary</item>
+        <item name="colorPrimaryVariant">@color/blue_secondary</item>
+        <item name="colorOnPrimary">@color/white</item>
+    </style>
 </resources>
